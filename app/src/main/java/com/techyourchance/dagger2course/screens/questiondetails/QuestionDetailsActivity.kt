@@ -45,13 +45,13 @@ class QuestionDetailsActivity : AppCompatActivity() {
 
         // init retrofit
         val retrofit = Retrofit.Builder()
-                .baseUrl(Constants.BASE_URL)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build()
+            .baseUrl(Constants.BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
         stackoverflowApi = retrofit.create(StackoverflowApi::class.java)
 
         // retrieve question ID passed from outside
-        questionId = intent.extras!!.getString(EXTRA_QUESTION_ID)!!
+        questionId = intent.extras!!.getString(QuestionDetailsActivity.EXTRA_QUESTION_ID)!!
     }
 
     override fun onStart() {
