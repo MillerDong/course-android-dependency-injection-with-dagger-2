@@ -58,14 +58,7 @@ class QuestionDetailsActivity : AppCompatActivity(), QuestionDetailsMvc.Listener
             try {
                 val response = stackoverflowApi.questionDetails(questionId)
                 if (response.isSuccessful && response.body() != null) {
-                    val questionBody = response.body()!!.question.body
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                        questionDetailsMvc.setQuestionBody(Html.fromHtml(questionBody, Html.FROM_HTML_MODE_LEGACY))
-
-                    } else {
-                        @Suppress("DEPRECATION")
-                        questionDetailsMvc.setQuestionBody(Html.fromHtml(questionBody))
-                    }
+                    questionDetailsMvc.bindQuestionBody(response.body()!!.question.body)
                 } else {
                     onFetchFailed(response.errorBody().toString())
                 }

@@ -1,5 +1,7 @@
 package com.techyourchance.dagger2course.screens.questiondetails
 
+import android.os.Build
+import android.text.Html
 import android.text.Spanned
 import android.view.LayoutInflater
 import android.view.View
@@ -9,6 +11,7 @@ import androidx.annotation.IdRes
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.techyourchance.dagger2course.R
 import com.techyourchance.dagger2course.screens.common.toolbar.MyToolbar
+import okhttp3.Response
 
 class QuestionDetailsMvc(
     inflater: LayoutInflater,
@@ -43,8 +46,13 @@ class QuestionDetailsMvc(
         swipeRefresh.isEnabled = false
     }
 
-    fun setQuestionBody(text: Spanned) {
-        txtQuestionBody.text = text
+    fun bindQuestionBody(questionBody: String) {
+        txtQuestionBody.text = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            Html.fromHtml(questionBody, Html.FROM_HTML_MODE_LEGACY)
+        } else {
+            @Suppress("DEPRECATION")
+            Html.fromHtml(questionBody)
+        }
     }
 
     fun showProgressIndication() {
