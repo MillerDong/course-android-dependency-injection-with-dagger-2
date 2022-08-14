@@ -10,31 +10,25 @@ import android.widget.TextView
 import androidx.annotation.IdRes
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.techyourchance.dagger2course.R
+import com.techyourchance.dagger2course.screens.common.mvc.BaseMvc
 import com.techyourchance.dagger2course.screens.common.toolbar.MyToolbar
 import okhttp3.Response
 
 class QuestionDetailsMvc(
     inflater: LayoutInflater,
     parent: ViewGroup?
-) {
+) : BaseMvc<QuestionDetailsMvc.Listener>(inflater, parent, R.layout.layout_question_details){
 
     interface Listener {
         fun onNavigationUpClicked()
     }
 
-    private val toolbar: MyToolbar
-    private val swipeRefresh: SwipeRefreshLayout
-    private val txtQuestionBody: TextView
-
-    private val listeners = mutableSetOf<Listener>()
-
-    val rootView: View = inflater.inflate(R.layout.layout_question_details, parent, false)
+    private val toolbar: MyToolbar = findViewById(R.id.toolbar)
+    private val swipeRefresh: SwipeRefreshLayout = findViewById(R.id.swipeRefresh)
+    private val txtQuestionBody: TextView = findViewById(R.id.txt_question_body)
 
     init {
-        txtQuestionBody = findViewById(R.id.txt_question_body)
-
         // init toolbar
-        toolbar = findViewById(R.id.toolbar)
         toolbar.setNavigateUpListener {
             for (listener in listeners) {
                 listener.onNavigationUpClicked()
@@ -42,7 +36,6 @@ class QuestionDetailsMvc(
         }
 
         // init pull-down-to-refresh (used as a progress indicator)
-        swipeRefresh = findViewById(R.id.swipeRefresh)
         swipeRefresh.isEnabled = false
     }
 
@@ -61,17 +54,5 @@ class QuestionDetailsMvc(
 
     fun hideProgressIndication() {
         swipeRefresh.isRefreshing = false
-    }
-
-    fun registerListener(listener: Listener) {
-        listeners.add(listener)
-    }
-
-    fun unregisterListener(listener: Listener) {
-        listeners.remove(listener)
-    }
-
-    private fun<T: View?> findViewById(@IdRes id: Int): T {
-        return rootView.findViewById<T>(id)
     }
 }

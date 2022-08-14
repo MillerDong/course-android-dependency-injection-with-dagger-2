@@ -4,36 +4,30 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.annotation.IdRes
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.techyourchance.dagger2course.R
 import com.techyourchance.dagger2course.questions.Question
-import com.techyourchance.dagger2course.screens.questiondetails.QuestionDetailsActivity
+import com.techyourchance.dagger2course.screens.common.mvc.BaseMvc
 import java.util.ArrayList
 
 class QuestionListMvc(
     inflater: LayoutInflater,
     parent: ViewGroup?
-) {
+) : BaseMvc<QuestionListMvc.Listener>(inflater, parent, R.layout.layout_questions_list) {
 
     interface Listener {
         fun onRefreshClicked()
+        fun onQuestionClicked(questionId: String)
     }
 
-    private val listeners = mutableSetOf<Listener>()
-
-    private val swipeRefresh: SwipeRefreshLayout
-    private val recyclerView: RecyclerView
+    private val swipeRefresh: SwipeRefreshLayout = findViewById(R.id.swipeRefresh)
+    private val recyclerView: RecyclerView = findViewById(R.id.recycler)
     private val questionsAdapter: QuestionsAdapter
-
-    val rootView: View = inflater.inflate(R.layout.layout_questions_list, parent, false)
-    private val context = rootView.context
 
     init {
         // init pull-down-to-refresh
-        swipeRefresh = findViewById(R.id.swipeRefresh)
         swipeRefresh.setOnRefreshListener {
             for (listener in listeners) {
                 listener.onRefreshClicked()
@@ -41,10 +35,11 @@ class QuestionListMvc(
         }
 
         // init recycler view
-        recyclerView = findViewById(R.id.recycler)
         recyclerView.layoutManager = LinearLayoutManager(context)
         questionsAdapter = QuestionsAdapter { clickedQuestion ->
-            QuestionDetailsActivity.start(context, clickedQuestion.id)
+            for (listener in listeners) {
+                listener.onQuestionClicked(clickedQuestion.id)
+            }
         }
         recyclerView.adapter = questionsAdapter
     }
@@ -61,18 +56,6 @@ class QuestionListMvc(
         if (swipeRefresh.isRefreshing) {
             swipeRefresh.isRefreshing = false
         }
-    }
-
-    fun registerListener(listener: Listener) {
-        listeners.add(listener)
-    }
-
-    fun unregisterListener(listener: Listener) {
-        listeners.remove(listener)
-    }
-
-    private fun<T : View?> findViewById(@IdRes id: Int): T {
-        return rootView.findViewById<T>(id)
     }
 
     class QuestionsAdapter(

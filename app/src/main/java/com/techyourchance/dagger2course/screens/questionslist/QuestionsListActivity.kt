@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.techyourchance.dagger2course.Constants
 import com.techyourchance.dagger2course.networking.StackoverflowApi
 import com.techyourchance.dagger2course.screens.common.dialogs.ServerErrorDialogFragment
+import com.techyourchance.dagger2course.screens.questiondetails.QuestionDetailsActivity
 import kotlinx.coroutines.*
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -76,5 +77,10 @@ class QuestionsListActivity : AppCompatActivity(), QuestionListMvc.Listener {
 
     override fun onRefreshClicked() {
         fetchQuestions()
+    }
+
+    override fun onQuestionClicked(questionId: String) {
+        QuestionDetailsActivity.start(this, questionId)
+
     }
 }
