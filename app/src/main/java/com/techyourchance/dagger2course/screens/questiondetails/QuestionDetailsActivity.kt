@@ -2,39 +2,31 @@ package com.techyourchance.dagger2course.screens.questiondetails
 
 import android.content.Context
 import android.content.Intent
-import android.os.Build
 import android.os.Bundle
-import android.text.Html
 import android.util.Log
 import android.view.LayoutInflater
 import androidx.appcompat.app.AppCompatActivity
-import com.techyourchance.dagger2course.Constants
-import com.techyourchance.dagger2course.networking.StackoverflowApi
-import com.techyourchance.dagger2course.screens.common.dialogs.ServerErrorDialogFragment
+import com.techyourchance.dagger2course.screens.common.dialogs.DialogManager
+import com.techyourchance.dagger2course.screens.common.navigation.NavigationManager
+import com.techyourchance.dagger2course.screens.common.networking.FetchQuestionDetailUseCase
 import kotlinx.coroutines.*
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 
 class QuestionDetailsActivity : AppCompatActivity(), QuestionDetailsMvc.Listener {
 
     private val coroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
 
+    private val fetchQuestionDetailUseCase = FetchQuestionDetailUseCase()
     private lateinit var questionDetailsMvc: QuestionDetailsMvc
-    private lateinit var stackoverflowApi: StackoverflowApi
-
     private lateinit var questionId: String
+    private lateinit var dialogManager: DialogManager
+    private lateinit var navigationManager: NavigationManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         questionDetailsMvc = QuestionDetailsMvc(LayoutInflater.from(this), null)
+        dialogManager = DialogManager(supportFragmentManager)
+        navigationManager = NavigationManager(this)
         setContentView(questionDetailsMvc.rootView)
-
-        // init retrofit
-        val retrofit = Retrofit.Builder()
-            .baseUrl(Constants.BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-        stackoverflowApi = retrofit.create(StackoverflowApi::class.java)
 
         // retrieve question ID passed from outside
         questionId = intent.extras!!.getString(EXTRA_QUESTION_ID)!!
@@ -56,15 +48,13 @@ class QuestionDetailsActivity : AppCompatActivity(), QuestionDetailsMvc.Listener
         coroutineScope.launch {
             questionDetailsMvc.showProgressIndication()
             try {
-                val response = stackoverflowApi.questionDetails(questionId)
-                if (response.isSuccessful && response.body() != null) {
-                    questionDetailsMvc.bindQuestionBody(response.body()!!.question.body)
-                } else {
-                    onFetchFailed(response.errorBody().toString())
-                }
-            } catch (t: Throwable) {
-                if (t !is CancellationException) {
-                    onFetchFailed(t.message)
+                when (val result = fetchQuestionDetailUseCase.fetchQuestionDetail(questionId)) {
+                    is FetchQuestionDetailUseCase.Result.Success -> {
+                        questionDetailsMvc.bindQuestionBody(result.questionDetail)
+                    }
+                    is FetchQuestionDetailUseCase.Result.Failure -> {
+                        onFetchFailed(result.message)
+                    }
                 }
             } finally {
                 questionDetailsMvc.hideProgressIndication()
@@ -74,9 +64,7 @@ class QuestionDetailsActivity : AppCompatActivity(), QuestionDetailsMvc.Listener
 
     private fun onFetchFailed(error: String?) {
         Log.i("MILLER", "error = $error")
-        supportFragmentManager.beginTransaction()
-                .add(ServerErrorDialogFragment.newInstance(), null)
-                .commitAllowingStateLoss()
+        dialogManager.showServerErrorDialog()
     }
 
     companion object {

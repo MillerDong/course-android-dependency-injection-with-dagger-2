@@ -1,5 +1,6 @@
 package com.techyourchance.dagger2course.screens.common.mvc
 
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,7 +17,7 @@ open class BaseMvc<LISTENER>(
     protected val listeners = mutableSetOf<LISTENER>()
 
     val rootView: View = inflater.inflate(layout, parent, false)
-    val context = rootView.context
+    val context: Context = rootView.context
 
     fun registerListener(listener: LISTENER) {
         listeners.add(listener)
