@@ -12,6 +12,6 @@ open class BaseActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        compositionRoot = ActivityCompositionRoot(this, supportFragmentManager)
+        compositionRoot = ActivityCompositionRoot((application as MyApplication).appCompositionRoot, this, supportFragmentManager)
     }
 }

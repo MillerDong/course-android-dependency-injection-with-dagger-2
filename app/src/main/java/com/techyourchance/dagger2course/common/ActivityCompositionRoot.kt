@@ -9,13 +9,10 @@ import com.techyourchance.dagger2course.screens.common.networking.FetchQuestionD
 import com.techyourchance.dagger2course.screens.common.networking.FetchQuestionsUseCase
 
 class ActivityCompositionRoot (
+    private val appCompositionRoot: AppCompositionRoot,
     private val activity: Activity,
     private val fragmentManager: FragmentManager
 ) {
-
-    private val appCompositionRoot by lazy {
-        (activity.application as MyApplication).appCompositionRoot
-    }
 
     private val stackoverflowApi by lazy {
         appCompositionRoot.stackoverflowApi
