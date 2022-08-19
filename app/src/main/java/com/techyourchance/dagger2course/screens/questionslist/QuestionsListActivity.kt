@@ -3,27 +3,29 @@ package com.techyourchance.dagger2course.screens.questionslist
 import android.os.Bundle
 import android.view.LayoutInflater
 import androidx.appcompat.app.AppCompatActivity
+import com.techyourchance.dagger2course.MyApplication
+import com.techyourchance.dagger2course.screens.common.activities.BaseActivity
 import com.techyourchance.dagger2course.screens.common.dialogs.DialogManager
 import com.techyourchance.dagger2course.screens.common.navigation.NavigationManager
 import com.techyourchance.dagger2course.screens.common.networking.FetchQuestionsUseCase
-import com.techyourchance.dagger2course.screens.questiondetails.QuestionDetailsActivity
 import kotlinx.coroutines.*
 
-class QuestionsListActivity : AppCompatActivity(), QuestionListMvc.Listener {
+class QuestionsListActivity : BaseActivity(), QuestionListMvc.Listener {
 
     private val coroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
 
     private lateinit var questionListMvc: QuestionListMvc
     private lateinit var dialogManager: DialogManager
     private lateinit var navigationManager: NavigationManager
-    private val fetchQuestionsUseCase: FetchQuestionsUseCase = FetchQuestionsUseCase()
+    private lateinit var fetchQuestionsUseCase: FetchQuestionsUseCase
     private var isDataLoaded = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         questionListMvc = QuestionListMvc(LayoutInflater.from(this), null)
-        dialogManager = DialogManager(supportFragmentManager)
-        navigationManager = NavigationManager(this)
+        fetchQuestionsUseCase = compositionRoot.fetchQuestionsUseCase
+        dialogManager = compositionRoot.dialogManager
+        navigationManager = compositionRoot.navigationManager
         setContentView(questionListMvc.rootView)
     }
 

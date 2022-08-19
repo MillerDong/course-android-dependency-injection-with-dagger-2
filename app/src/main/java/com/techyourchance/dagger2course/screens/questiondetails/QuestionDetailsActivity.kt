@@ -5,17 +5,18 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
-import androidx.appcompat.app.AppCompatActivity
+import com.techyourchance.dagger2course.MyApplication
+import com.techyourchance.dagger2course.screens.common.activities.BaseActivity
 import com.techyourchance.dagger2course.screens.common.dialogs.DialogManager
 import com.techyourchance.dagger2course.screens.common.navigation.NavigationManager
 import com.techyourchance.dagger2course.screens.common.networking.FetchQuestionDetailUseCase
 import kotlinx.coroutines.*
 
-class QuestionDetailsActivity : AppCompatActivity(), QuestionDetailsMvc.Listener {
+class QuestionDetailsActivity : BaseActivity(), QuestionDetailsMvc.Listener {
 
     private val coroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
 
-    private val fetchQuestionDetailUseCase = FetchQuestionDetailUseCase()
+    private lateinit var fetchQuestionDetailUseCase: FetchQuestionDetailUseCase
     private lateinit var questionDetailsMvc: QuestionDetailsMvc
     private lateinit var questionId: String
     private lateinit var dialogManager: DialogManager
@@ -24,8 +25,9 @@ class QuestionDetailsActivity : AppCompatActivity(), QuestionDetailsMvc.Listener
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         questionDetailsMvc = QuestionDetailsMvc(LayoutInflater.from(this), null)
-        dialogManager = DialogManager(supportFragmentManager)
-        navigationManager = NavigationManager(this)
+        fetchQuestionDetailUseCase = compositionRoot.fetchQuestionDetailUseCase
+        dialogManager = compositionRoot.dialogManager
+        navigationManager = compositionRoot.navigationManager
         setContentView(questionDetailsMvc.rootView)
 
         // retrieve question ID passed from outside
