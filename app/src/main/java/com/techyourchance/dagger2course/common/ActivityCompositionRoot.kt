@@ -2,7 +2,6 @@ package com.techyourchance.dagger2course.common
 
 import android.app.Activity
 import androidx.fragment.app.FragmentManager
-import com.techyourchance.dagger2course.MyApplication
 import com.techyourchance.dagger2course.screens.common.dialogs.DialogManager
 import com.techyourchance.dagger2course.screens.common.navigation.NavigationManager
 import com.techyourchance.dagger2course.screens.common.networking.FetchQuestionDetailUseCase

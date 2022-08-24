@@ -4,7 +4,6 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.techyourchance.dagger2course.MyApplication
 import com.techyourchance.dagger2course.common.ActivityCompositionRoot
-import com.techyourchance.dagger2course.common.AppCompositionRoot
 
 open class BaseActivity : AppCompatActivity() {
 

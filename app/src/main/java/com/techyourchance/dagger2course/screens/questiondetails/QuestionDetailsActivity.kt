@@ -5,7 +5,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
-import com.techyourchance.dagger2course.MyApplication
 import com.techyourchance.dagger2course.screens.common.activities.BaseActivity
 import com.techyourchance.dagger2course.screens.common.dialogs.DialogManager
 import com.techyourchance.dagger2course.screens.common.navigation.NavigationManager
